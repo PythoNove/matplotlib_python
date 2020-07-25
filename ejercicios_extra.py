@@ -15,6 +15,11 @@ __author__ = "Inove Coding School"
 __email__ = "alumnos@inove.com.ar"
 __version__ = "1.1"
 
+import csv
+import matplotlib.pyplot as plt 
+import matplotlib.axes
+import mplcursors
+import numpy as np
 
 '''
 NOTA PARA TODOS LOS EJERCICIOS
@@ -44,7 +49,7 @@ Descripción del dataset "ventas.csv"
 '''
 
 
-def ej1():
+def ej1(ventas):
     print('Comenzamos a divertirnos!')
 
     '''
@@ -92,8 +97,31 @@ def ej1():
 
     '''
 
+    # Extraer datos de archivo ventas.csv
+    ventas = [{'Dia': int(ventas[x].get('Dia')), 'Alimentos': int(ventas[x].get('Alimentos'))} 
+        for x in range(len(ventas)) if ventas[x].get('Mes') == '1']
+    
+    # formar listas para graficar
+    dia = [x['Dia'] for x in ventas]
+    venta_alimentos = [x['Alimentos'] for x in ventas]
 
-def ej2():
+    # gráfico line plot
+    fig = plt.figure('ventas.csv')
+    ax = fig.add_subplot()
+
+    ax.plot(dia, venta_alimentos, color='r', marker='.', label='Cantidad vendida')
+    ax.set_facecolor('whitesmoke')
+    ax.set_title('Mes Enero: VENTA DE ALIMENTOS')
+    ax.set_ylabel('Cantidad')
+    ax.set_xlabel('Dia')
+    ax.legend()
+    ax.grid(ls='solid')
+    mplcursors.cursor(multiple=True)
+
+    plt.show()
+
+
+def ej2(ventas):
     print('Comenzamos a ponernos serios!')
 
     '''
@@ -119,9 +147,32 @@ def ej2():
     plot(tendencia)
 
     '''
+  
+    # obtener datos
+    ventas_de_alimentos = [int(ventas[x].get('Alimentos')) for x in range(len(ventas))]
+
+    # convertir lista ventas en array ventas
+    ventas_de_alimentos = np.array(ventas_de_alimentos)
+
+    # aplicar diff
+    tendencia = np.diff(ventas_de_alimentos)
+    
+    # grafico de tendencia
+    fig = plt.figure('ventas.csv')
+    ax = fig.add_subplot()
+
+    ax.plot(tendencia, color='g', marker='^', label='Diferencia dia a dia')
+    ax.set_facecolor('lightgray')
+    ax.set_title('TENDENCIA', fontsize=20)
+    ax.set_ylabel('Diferencia (función np.diff)')
+    ax.legend()
+    ax.grid(ls='dashed')
+    mplcursors.cursor(multiple=True)
+
+    plt.show()
 
 
-def ej3():
+def ej3(ventas):
     print("Buscando la tendencia")
 
     '''
@@ -133,11 +184,28 @@ def ej3():
     Luego graficar utilizando Line Plot esta nueva lista/array/columna
     para visualizar la tendencia de cuantos días consecutivos hay
     ventas de electrodomésticos.
-
+    
     '''
+    # Extraer datos
+    dias_venta = [1 if ventas[x].get('Electrodomesticos') == '0' else 0 
+                    for x in range(len(ventas))]
 
+    # gráfico
+    fig = plt.figure('ventas.csv')
+    ax = fig.add_subplot()
 
-def ej4():
+    ax.plot(dias_venta, color='r', marker='^', label='')
+    ax.set_facecolor('lightgray')
+    ax.set_title('TENDENCIA', fontsize=20)
+    ax.set_xlabel('Dias')
+    ax.set_ylabel('Vendido / No vendido')
+    # ax.legend()
+    ax.grid(ls='dashed')
+    mplcursors.cursor(multiple=True)
+
+    plt.show()
+
+def ej4(ventas):
     print("Exprimiendo los datos")
 
     '''
@@ -158,8 +226,45 @@ def ej4():
     del año
     '''
 
+    # formar lista, array y suma de alimentos
+    alimentos = [int(ventas[x].get('Alimentos')) for x in range(len(ventas))]
+    suma_alimentos = sum(np.array(alimentos))
+        
+    # formar lista, array y suma de bazar
+    bazar = [int(ventas[x].get('Bazar')) for x in range(len(ventas))]
+    suma_bazar = sum(np.array(bazar))
 
-def ej5():
+    # formar lista, array y suma de limpieza
+    limpieza = [int(ventas[x].get('Limpieza')) for x in range(len(ventas))]
+    suma_limpieza = sum(np.array(limpieza))
+    
+
+    # formar lista, array y suma de electrodomesticos
+    electro = [int(ventas[x].get('Electrodomesticos')) for x in range(len(ventas))]
+    suma_electro = sum(np.array(electro))
+
+    # lista de sumas y sumatoria total
+    lista_total = [suma_alimentos, suma_bazar,  suma_limpieza, suma_electro]
+    sumatoria_total = suma_alimentos + suma_bazar +  suma_limpieza + suma_electro
+
+    
+    # grafico
+    productos = ['Alimentos', 'Bazar', 'Limpieza','Electrodomesticos']
+    porcentajes = [suma/sumatoria_total*100 for suma in lista_total]
+        
+    fig = plt.figure('ventas.csv')
+    fig.suptitle('Facturación en porcentaje', fontsize=18)
+    ax = fig.add_subplot()
+
+    explode = (0, 0, 0, 0.1)
+    ax.pie(porcentajes, labels=productos, autopct='%1.1f%%', startangle=90, shadow=True, 
+            explode=explode)
+    ax.axis('equal')
+
+    plt.show()
+
+
+def ej5(ventas):
     print("Ahora sí! buena suerte :)")
 
     '''
@@ -181,12 +286,127 @@ def ej5():
     realicen uno solo y agrupen la información utilizando gráfico de barras
     apilados o agrupados (a su elección)
     '''
+    # sumatoria de arrays con las cantidades vendidas por producto y por mes
+    alimentos_1 = sum(np.array([int(ventas[x].get('Alimentos')) 
+                for x in range(len(ventas)) if ventas[x].get('Mes') == '1']))
+    alimentos_2 = sum(np.array([int(ventas[x].get('Alimentos')) 
+                for x in range(len(ventas)) if ventas[x].get('Mes') == '2']))
+    alimentos_3 = sum(np.array([int(ventas[x].get('Alimentos')) 
+                for x in range(len(ventas)) if ventas[x].get('Mes') == '3']))
+    
+    bazar_1 = sum(np.array([int(ventas[x].get('Bazar')) 
+                for x in range(len(ventas)) if ventas[x].get('Mes') == '1']))
+    bazar_2 = sum(np.array([int(ventas[x].get('Bazar')) 
+                for x in range(len(ventas)) if ventas[x].get('Mes') == '2']))
+    bazar_3 = sum(np.array([int(ventas[x].get('Bazar')) 
+                for x in range(len(ventas)) if ventas[x].get('Mes') == '3']))
 
+    limpieza_1 = sum(np.array([int(ventas[x].get('Limpieza')) 
+                for x in range(len(ventas)) if ventas[x].get('Mes') == '1']))
+    limpieza_2 = sum(np.array([int(ventas[x].get('Limpieza')) 
+                for x in range(len(ventas)) if ventas[x].get('Mes') == '2']))
+    limpieza_3 = sum(np.array([int(ventas[x].get('Limpieza')) 
+                for x in range(len(ventas)) if ventas[x].get('Mes') == '3']))
+
+    electro_1 = sum(np.array([int(ventas[x].get('Electrodomesticos')) 
+                for x in range(len(ventas)) if ventas[x].get('Mes') == '1']))
+    electro_2 = sum(np.array([int(ventas[x].get('Electrodomesticos')) 
+                for x in range(len(ventas)) if ventas[x].get('Mes') == '2']))
+    electro_3 = sum(np.array([int(ventas[x].get('Electrodomesticos')) 
+                for x in range(len(ventas)) if ventas[x].get('Mes') == '3']))
+
+    productos = ['Alimentos', 'Bazar', 'Limpieza', 'Electrodomestricos']
+    
+    # ventas por mes
+    mes_1 = [alimentos_1, bazar_1, limpieza_1, electro_1]
+    mes_2 = [alimentos_2, bazar_2, limpieza_2, electro_2]
+    mes_3 = [alimentos_3, bazar_3, limpieza_3, electro_3]
+    
+    # grafico de barras
+    fig = plt.figure('ventas.csv')
+        
+    ax1 = fig.add_subplot(1, 1, 1)
+    ax2 = fig.add_subplot(2, 1, 2)
+    ax3 = fig.add_subplot(3, 1, 3)
+    
+    ax1.bar(productos, mes_1, label='Mes_1')
+    ax1.set_facecolor('whitesmoke')
+    ax1.legend()
+    ax1.set_title('Mes 1', fontsize=16)
+    ax1.set_xlabel('Productos', fontsize=10)
+    ax1.set_ylabel('Cantidad vendidos', fontsize=10)
+        
+    ax2.bar(productos, mes_2, label='Mes_2')
+    ax2.set_facecolor('whitesmoke')
+    ax2.legend()
+    ax2.set_title('Mes 2', fontsize=16)
+    ax2.set_xlabel('Productos', fontsize=10)
+    ax2.set_ylabel('Cantidad vendidos', fontsize=10)
+    
+    ax3.bar(productos, mes_3, label='Mes_3')
+    ax3.set_facecolor('whitesmoke')
+    ax3.legend()
+    ax3.set_title('Mes 3', fontsize=16)
+    ax3.set_xlabel('Productos', fontsize=10)
+    ax3.set_ylabel('Cantidad vendidos', fontsize=10)
+    
+    plt.show(block=False)
+
+    # gráfico de barras apilados
+    meses = ['1', '2', '3']
+
+    alimentos = np.array([alimentos_1, alimentos_2, alimentos_3])
+    bazar = np.array([bazar_1, bazar_2, bazar_3])
+    limpieza = np.array([limpieza_1, limpieza_2, limpieza_3])
+    electro = np.array([electro_1, electro_2, electro_3])
+
+    fig = plt.figure()
+    ax = fig.add_subplot()
+
+    ax.bar(meses, alimentos, label='Alimentos')
+    ax.bar(meses, bazar, bottom=alimentos, label='Bazar')
+    ax.bar(meses, limpieza, bottom=[sum(x) for x in zip(alimentos, bazar)], label='limpieza')
+    ax.bar(meses, electro, bottom=[sum(x) for x in zip(alimentos, bazar, limpieza)], 
+                label='Electro')
+
+    ax.set_facecolor('whitesmoke')
+    ax.set_title('Ventas por mes', fontsize=16)
+    ax.set_xlabel('Meses', fontsize=10)
+    ax.set_ylabel('Cantidad vendida', fontsize=10)
+    ax.legend()
+
+    plt.show(block=False)
+
+    # gráfico de barras agrupados
+    meses = np.array([1, 2, 3])
+
+    width = 0.2  # dividir la unidad en 5 |espacio|producto|producto|producto|producto|
+    fig = plt.figure()
+    ax = fig.add_subplot()
+
+    ax.bar(meses, alimentos, width=width, label='Alimentos')
+    ax.bar(meses + width, bazar, width=width, label='Bazar')
+    ax.bar(meses + 2*width, limpieza, width=width, label='Limpieza')
+    ax.bar(meses + 3*width, electro, width=width, label='Electro')
+
+    ax.set_xticks(meses)
+    
+    ax.set_facecolor('whitesmoke')
+    ax.set_title('Ventas por mes', fontsize=16)
+    ax.set_xlabel('Meses', fontsize=10)
+    ax.set_ylabel('Cantidad vendida', fontsize=10)
+    ax.legend()
+
+    plt.show()  
 
 if __name__ == '__main__':
     print("Ejercicios de práctica")
-    ej1()
-    # ej2()
-    # ej3()
-    # ej4()
-    # ej5()
+
+    with open('ventas.csv') as csvfile:
+        ventas = list(csv.DictReader(csvfile))
+
+    # ej1(ventas)
+    # ej2(ventas)
+    # ej3(ventas)
+    # ej4(ventas)
+    ej5(ventas)    
